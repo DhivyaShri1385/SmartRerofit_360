@@ -6,6 +6,7 @@ from app.database import Base, engine, SessionLocal
 from app.api import api_router
 from app.services.machine_seed import seed_demo_machines
 from app.services.user_seed import seed_demo_users
+from app.services.sensor_seed import seed_demo_sensors
 
 Base.metadata.create_all(bind=engine)
 
@@ -13,6 +14,7 @@ db = SessionLocal()
 try:
     seed_demo_machines(db)
     seed_demo_users(db)
+    seed_demo_sensors(db)   # must run after machines exist
 finally:
     db.close()
 
