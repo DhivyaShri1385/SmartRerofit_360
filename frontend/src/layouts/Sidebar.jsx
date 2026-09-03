@@ -1,8 +1,13 @@
 import { NavLink } from "react-router-dom";
 import * as Icons from "lucide-react";
 import { NAV_ITEMS } from "../utils/constants";
+import { useAuth } from "../context/AuthContext";
+import { canAccessRoute } from "../utils/permissions";
 
 export default function Sidebar({ collapsed, onClose }) {
+  const { user } = useAuth();
+  const visibleItems = NAV_ITEMS.filter((item) => canAccessRoute(user?.role, item.path));
+
   return (
     <aside
       className={`h-full bg-surface-panel border-r border-surface-border flex flex-col
@@ -18,7 +23,7 @@ export default function Sidebar({ collapsed, onClose }) {
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-        {NAV_ITEMS.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = Icons[item.icon] || Icons.Circle;
           return (
             <NavLink

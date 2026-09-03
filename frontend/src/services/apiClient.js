@@ -1,8 +1,3 @@
-/**
- * Single Axios instance for the whole app.
- * All API calls MUST go through service files that use this client —
- * never hardcode a fetch URL inside a component.
- */
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -21,9 +16,11 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Centralized error normalization consumed by hooks/pages.
-    const message =
-      error.response?.data?.detail || error.message || "Unexpected network error";
+    if (error.response?.status === 401) {
+      // Notify AuthContext to clear session and let ProtectedRoute redirect to /login.
+      window.dispatchEvent(new CustomEvent("sr360:session-expired"));
+    }
+    const message = error.response?.data?.detail || error.message || "Unexpected network error";
     return Promise.reject({ ...error, message });
   }
 );
