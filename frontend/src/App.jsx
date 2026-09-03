@@ -9,6 +9,7 @@ import LiveMonitoring from "./pages/LiveMonitoring";
 import Machines from "./pages/Machines";
 import MachineDetail from "./pages/MachineDetail";
 import Sensors from "./pages/Sensors";
+import SensorDetail from "./pages/SensorDetail";
 import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import Energy from "./pages/Energy";
 import Alerts from "./pages/Alerts";
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/machines" element={<Machines />} />
           <Route path="/machines/:machineId" element={<MachineDetail />} />
           <Route path="/sensors" element={<Sensors />} />
+          <Route path="/sensors/:sensorId" element={<SensorDetail />} />
           <Route path="/predictive-maintenance" element={<PredictiveMaintenance />} />
           <Route path="/energy" element={<Energy />} />
           <Route path="/alerts" element={<Alerts />} />
