@@ -1,0 +1,1 @@
+"""Business logic layer — machine seeding, simulator, alert engine, auth."""
