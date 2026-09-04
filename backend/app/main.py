@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,6 +8,7 @@ from app.api import api_router
 from app.services.machine_seed import seed_demo_machines
 from app.services.user_seed import seed_demo_users
 from app.services.sensor_seed import seed_demo_sensors
+from app.services.simulation.engine import run_simulation_loop
 
 Base.metadata.create_all(bind=engine)
 
@@ -14,7 +16,7 @@ db = SessionLocal()
 try:
     seed_demo_machines(db)
     seed_demo_users(db)
-    seed_demo_sensors(db)   # must run after machines exist
+    seed_demo_sensors(db)
 finally:
     db.close()
 
@@ -29,3 +31,8 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
+
+
+@app.on_event("startup")
+async def start_background_simulation():
+    asyncio.create_task(run_simulation_loop())

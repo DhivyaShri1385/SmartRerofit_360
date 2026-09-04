@@ -3,6 +3,7 @@ from app.schemas.machine import MachineBase, MachineCreate, MachineUpdate, Machi
 from app.schemas.user import UserLogin, UserOut, Token
 from app.schemas.dashboard import DashboardOverview
 from app.schemas.sensor import SensorOut, ThresholdUpdate, SensorStateUpdate
+from app.schemas.sensor_reading import SensorReadingOut
 
 __all__ = [
     "DatasetSummary", "TrainRequest", "ModelRunOut",
@@ -10,4 +11,5 @@ __all__ = [
     "UserLogin", "UserOut", "Token",
     "DashboardOverview",
     "SensorOut", "ThresholdUpdate", "SensorStateUpdate",
+    "SensorReadingOut",
 ]
