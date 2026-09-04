@@ -4,6 +4,8 @@ import { Loader2, AlertTriangle, ArrowLeft, Save, ClockAlert } from "lucide-reac
 import PageHeader from "../components/PageHeader";
 import SensorStateBadge from "../components/SensorStateBadge";
 import { getSensor, updateThresholds, toggleSampling } from "../services/sensorService";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useSensorHistory } from "../hooks/useSensorHistory";
 
 const PARAM_LABELS = {
   vibration: "Vibration",
@@ -12,9 +14,9 @@ const PARAM_LABELS = {
   voltage: "Voltage",
   rpm: "RPM",
 };
-
 export default function SensorDetail() {
   const { sensorId } = useParams();
+  const { history, loading: historyLoading } = useSensorHistory(sensorId);
   const [sensor, setSensor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,16 +104,43 @@ export default function SensorDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* Metadata + historical graph placeholder */}
         <div className="panel p-4">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Historical Trend</h3>
-          <div className="h-56 flex flex-col items-center justify-center text-gray-600 gap-2 border border-dashed border-surface-border rounded">
-            <ClockAlert size={22} />
-            <span className="text-xs text-center px-6">
-              {sensor.sampling_enabled
-                ? "Sampling is enabled, but the simulated data stream isn't wired up yet — that's the next module (Simulated Data Engine)."
-                : "No historical readings yet. Enable sampling to prepare this sensor for the simulated data stream (introduced in the Simulated Data Engine module)."}
-            </span>
-          </div>
-        </div>
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-sm font-medium text-gray-300">Historical Trend</h3>
+    <span className="demo-tag">Simulated Data</span>
+  </div>
+
+  {historyLoading && history.length === 0 && (
+    <div className="h-56 flex items-center justify-center text-gray-500 text-sm gap-2">
+      <Loader2 size={16} className="animate-spin" /> Loading readings…
+    </div>
+  )}
+
+  {!historyLoading && history.length === 0 && (
+    <div className="h-56 flex flex-col items-center justify-center text-gray-600 gap-2 border border-dashed border-surface-border rounded">
+      <ClockAlert size={22} />
+      <span className="text-xs text-center px-6">
+        {sensor.sampling_enabled
+          ? "Sampling is enabled — the first simulated readings will appear within a few seconds."
+          : "No historical readings yet. Enable sampling to start the simulated data stream."}
+      </span>
+    </div>
+  )}
+
+  {history.length > 0 && (
+    <ResponsiveContainer width="100%" height={224}>
+      <LineChart data={history.map((r) => ({
+        ...r,
+        time: new Date(r.recorded_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      }))}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#2a323d" />
+        <XAxis dataKey="time" stroke="#6b7280" fontSize={10} />
+        <YAxis stroke="#6b7280" fontSize={10} domain={["auto", "auto"]} />
+        <Tooltip contentStyle={{ background: "#161b22", border: "1px solid #2a323d", borderRadius: 6, fontSize: 12 }} />
+        <Line type="monotone" dataKey="value" stroke="#0ea5e9" strokeWidth={2} dot={false} isAnimationActive={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  )}
+</div>
 
         {/* State + config */}
         <div className="panel p-4 space-y-3">
