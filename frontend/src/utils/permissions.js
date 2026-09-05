@@ -1,11 +1,10 @@
-/** Central role -> route access map, mirrors backend role guards. */
 export const ROLE_PERMISSIONS = {
-  admin: ["*"], // full access
+  admin: ["*"],
   engineer: [
-    "/", "/live-monitoring", "/machines", "/sensors",
+    "/", "/live-monitoring", "/machines", "/machine-floor", "/sensors", "/devices",
     "/predictive-maintenance", "/maintenance", "/reports",
   ],
-  operator: ["/", "/live-monitoring", "/alerts", "/maintenance"],
+  operator: ["/", "/live-monitoring", "/machine-floor", "/alerts", "/maintenance"],
 };
 
 export function canAccessRoute(role, path) {
@@ -13,7 +12,7 @@ export function canAccessRoute(role, path) {
   const allowed = ROLE_PERMISSIONS[role];
   if (!allowed) return false;
   if (allowed.includes("*")) return true;
-  // machine detail pages inherit /machines access
   if (path.startsWith("/machines/")) return allowed.includes("/machines");
+  if (path.startsWith("/devices/")) return allowed.includes("/devices");
   return allowed.includes(path);
 }

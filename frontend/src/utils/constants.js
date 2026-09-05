@@ -15,6 +15,7 @@ export const NAV_ITEMS = [
   { label: "Dashboard", path: "/", icon: "LayoutDashboard" },
   { label: "Live Monitoring", path: "/live-monitoring", icon: "Activity" },
   { label: "Machines", path: "/machines", icon: "Settings2" },
+  { label: "Machine Floor", path: "/machine-floor", icon: "LayoutGrid" },
   { label: "Sensors", path: "/sensors", icon: "Radio" },
   { label: "Predictive Maintenance", path: "/predictive-maintenance", icon: "Brain" },
   { label: "Energy", path: "/energy", icon: "Zap" },
