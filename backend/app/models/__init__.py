@@ -6,6 +6,7 @@ from app.models.sensor import Sensor, SensorType, SensorState
 from app.models.sensor_reading import SensorReading
 from app.models.alert import Alert, AlertLevel, AlertStatus
 from app.models.maintenance_record import MaintenanceRecord, MaintenanceType, MaintenanceRecordStatus
+from app.models.device import Device, DeviceConnectionStatus
 
 __all__ = [
     "MLTrainingRecord", "ModelRun",
@@ -15,4 +16,5 @@ __all__ = [
     "SensorReading",
     "Alert", "AlertLevel", "AlertStatus",
     "MaintenanceRecord", "MaintenanceType", "MaintenanceRecordStatus",
+    "Device", "DeviceConnectionStatus",
 ]

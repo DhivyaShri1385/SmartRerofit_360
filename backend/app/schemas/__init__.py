@@ -11,6 +11,11 @@ from app.schemas.energy import EnergyOverview, EnergyTrendPoint, MachineEnergyCo
 from app.schemas.maintenance_record import (
     MaintenanceRecordCreate, MaintenanceRecordUpdate, MaintenanceRecordOut, MaintenanceOverview,
 )
+from app.schemas.reports import (
+    MachinePerformanceReportRow, SensorTrendReportRow, AlertReportRow,
+    MaintenanceReportRow, ReportBundle,
+)
+from app.schemas.device import DeviceOut, DeviceUpdate, SensorMappingOut
 
 __all__ = [
     "DatasetSummary", "TrainRequest", "ModelRunOut",

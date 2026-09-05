@@ -8,6 +8,7 @@ from app.api import api_router
 from app.services.machine_seed import seed_demo_machines
 from app.services.user_seed import seed_demo_users
 from app.services.sensor_seed import seed_demo_sensors
+from app.services.device_seed import seed_demo_devices
 from app.services.simulation.engine import run_simulation_loop
 
 Base.metadata.create_all(bind=engine)
@@ -17,6 +18,7 @@ try:
     seed_demo_machines(db)
     seed_demo_users(db)
     seed_demo_sensors(db)
+    seed_demo_devices(db)
 finally:
     db.close()
 
