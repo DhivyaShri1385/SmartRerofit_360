@@ -1,5 +1,8 @@
 from fastapi import APIRouter
-from app.api import health, analytics, machines, auth, dashboard, sensors, sensor_readings, simulation
+from app.api import (
+    health, analytics, machines, auth, dashboard,
+    sensors, sensor_readings, simulation, live_monitoring, alerts,
+)
 
 api_router = APIRouter()
 api_router.include_router(health.router)
@@ -10,3 +13,5 @@ api_router.include_router(dashboard.router)
 api_router.include_router(sensors.router)
 api_router.include_router(sensor_readings.router)
 api_router.include_router(simulation.router)
+api_router.include_router(live_monitoring.router)
+api_router.include_router(alerts.router)

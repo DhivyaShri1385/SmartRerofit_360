@@ -18,6 +18,7 @@ from app.models.machine import Machine, MachineStatus, ConnectivityStatus
 from app.models.sensor import Sensor, SensorState
 from app.models.sensor_reading import SensorReading
 from app.services.simulation.simulated_provider import SimulatedDataProvider
+from app.services.alert_engine import evaluate_and_generate_alerts
 
 logger = logging.getLogger("smartretrofit.simulation")
 
@@ -87,7 +88,11 @@ def run_tick(db: Session) -> None:
                 recorded_at=now,
             ))
 
-            sensor.state = _evaluate_sensor_state(sensor, value)
+            previous_state = sensor.state
+            new_state = _evaluate_sensor_state(sensor, value)
+            evaluate_and_generate_alerts(db, sensor, previous_state, new_state, value)
+
+            sensor.state = new_state
             sensor.last_update = now
             active_states.append(sensor.state)
             any_reading_generated = True
