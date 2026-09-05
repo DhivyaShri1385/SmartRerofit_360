@@ -8,6 +8,9 @@ from app.schemas.live_monitoring import LiveMonitoringSnapshot, LiveSensorPoint,
 from app.schemas.alert import AlertOut, AlertSummary
 from app.schemas.maintenance_recommendation import MachineHealthOut, RecommendationOut
 from app.schemas.energy import EnergyOverview, EnergyTrendPoint, MachineEnergyComparison
+from app.schemas.maintenance_record import (
+    MaintenanceRecordCreate, MaintenanceRecordUpdate, MaintenanceRecordOut, MaintenanceOverview,
+)
 
 __all__ = [
     "DatasetSummary", "TrainRequest", "ModelRunOut",
@@ -20,4 +23,5 @@ __all__ = [
     "AlertOut", "AlertSummary",
     "MachineHealthOut", "RecommendationOut",
     "EnergyOverview", "EnergyTrendPoint", "MachineEnergyComparison",
+    "MaintenanceRecordCreate", "MaintenanceRecordUpdate", "MaintenanceRecordOut", "MaintenanceOverview",
 ]
