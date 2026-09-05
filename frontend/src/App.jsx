@@ -13,6 +13,7 @@ import SensorDetail from "./pages/SensorDetail";
 import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import Energy from "./pages/Energy";
 import Alerts from "./pages/Alerts";
+import AlertDetail from "./pages/AlertDetail";
 import Maintenance from "./pages/Maintenance";
 import Reports from "./pages/Reports";
 import SettingsPage from "./pages/SettingsPage";
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/predictive-maintenance" element={<PredictiveMaintenance />} />
           <Route path="/energy" element={<Energy />} />
           <Route path="/alerts" element={<Alerts />} />
+          <Route path="/alerts/:alertId" element={<AlertDetail />} />
           <Route path="/maintenance" element={<Maintenance />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<SettingsPage />} />

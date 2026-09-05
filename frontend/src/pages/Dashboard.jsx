@@ -10,10 +10,12 @@ import EnergySummaryCard from "../components/EnergySummaryCard";
 import MachineSelector from "../components/MachineSelector";
 import { useMachines } from "../hooks/useMachines";
 import { useDashboard } from "../hooks/useDashboard";
+import { getAlertSummary } from "../services/alertService";
 
 export default function Dashboard() {
   const { machines, loading: machinesLoading } = useMachines();
   const [selectedMachineId, setSelectedMachineId] = useState(null);
+  const [alertSummary, setAlertSummary] = useState(null);
 
   useEffect(() => {
     if (!selectedMachineId && machines.length > 0) {
@@ -21,6 +23,15 @@ export default function Dashboard() {
       setSelectedMachineId(lathe ? lathe.id : machines[0].id);
     }
   }, [machines, selectedMachineId]);
+
+  useEffect(() => {
+    if (!selectedMachineId) return;
+    const fetchSummary = () =>
+      getAlertSummary(selectedMachineId).then(setAlertSummary).catch(() => {});
+    fetchSummary();
+    const interval = setInterval(fetchSummary, 8000);
+    return () => clearInterval(interval);
+  }, [selectedMachineId]);
 
   const { data, loading, error } = useDashboard(selectedMachineId);
 
@@ -96,7 +107,7 @@ export default function Dashboard() {
       {/* Summary Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <MaintenanceSummaryCard maintenance={data.maintenance} />
-        <AlertSummaryCard alerts={data.alerts} />
+        <AlertSummaryCard alerts={alertSummary || data.alerts} />
         <EnergySummaryCard energy={data.energy} />
       </div>
     </div>
