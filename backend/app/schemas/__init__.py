@@ -7,6 +7,7 @@ from app.schemas.sensor_reading import SensorReadingOut
 from app.schemas.live_monitoring import LiveMonitoringSnapshot, LiveSensorPoint, LiveHistoryPoint
 from app.schemas.alert import AlertOut, AlertSummary
 from app.schemas.maintenance_recommendation import MachineHealthOut, RecommendationOut
+from app.schemas.energy import EnergyOverview, EnergyTrendPoint, MachineEnergyComparison
 
 __all__ = [
     "DatasetSummary", "TrainRequest", "ModelRunOut",
@@ -18,4 +19,5 @@ __all__ = [
     "LiveMonitoringSnapshot", "LiveSensorPoint", "LiveHistoryPoint",
     "AlertOut", "AlertSummary",
     "MachineHealthOut", "RecommendationOut",
+    "EnergyOverview", "EnergyTrendPoint", "MachineEnergyComparison",
 ]
