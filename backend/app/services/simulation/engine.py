@@ -14,18 +14,19 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
-from app.models.machine import Machine, MachineStatus, ConnectivityStatus
+from app.models.machine import Machine, ConnectivityStatus
 from app.models.sensor import Sensor, SensorState
 from app.models.sensor_reading import SensorReading
 from app.services.simulation.simulated_provider import SimulatedDataProvider
+from app.services.sensor_evaluation import evaluate_sensor_state, derive_machine_status
 from app.services.alert_engine import evaluate_and_generate_alerts
 
 logger = logging.getLogger("smartretrofit.simulation")
 
 SIMULATION_INTERVAL_SECONDS = 5
 
-_provider = SimulatedDataProvider()   # single swap point for future hardware integration
-_engine_running = True                # global pause/resume flag, controlled via API
+_provider = SimulatedDataProvider()
+_engine_running = True
 
 
 def is_running() -> bool:
@@ -37,35 +38,13 @@ def set_running(value: bool) -> None:
     _engine_running = value
 
 
-def _evaluate_sensor_state(sensor: Sensor, value: float) -> SensorState:
-    if sensor.critical_max is not None and value >= sensor.critical_max:
-        return SensorState.FAULT
-    if sensor.critical_min is not None and value <= sensor.critical_min:
-        return SensorState.FAULT
-    if sensor.warning_max is not None and value >= sensor.warning_max:
-        return SensorState.WARNING
-    if sensor.warning_min is not None and value <= sensor.warning_min:
-        return SensorState.WARNING
-    return SensorState.ACTIVE
-
-
-def _derive_machine_status(sensor_states: list[SensorState]) -> MachineStatus:
-    if any(s == SensorState.FAULT for s in sensor_states):
-        return MachineStatus.CRITICAL
-    if any(s == SensorState.WARNING for s in sensor_states):
-        return MachineStatus.WARNING
-    if sensor_states:
-        return MachineStatus.NORMAL
-    return MachineStatus.OFFLINE
-
-
 def run_tick(db: Session) -> None:
     now = datetime.utcnow()
     machines = db.query(Machine).filter(Machine.is_active == True).all()
 
     for machine in machines:
         if not machine.monitoring_enabled:
-            machine.status = MachineStatus.OFFLINE
+            machine.status = machine.status.__class__.OFFLINE
             machine.connectivity = ConnectivityStatus.OFFLINE
             continue
 
@@ -89,7 +68,7 @@ def run_tick(db: Session) -> None:
             ))
 
             previous_state = sensor.state
-            new_state = _evaluate_sensor_state(sensor, value)
+            new_state = evaluate_sensor_state(sensor, value)
             evaluate_and_generate_alerts(db, sensor, previous_state, new_state, value)
 
             sensor.state = new_state
@@ -98,11 +77,11 @@ def run_tick(db: Session) -> None:
             any_reading_generated = True
 
         if any_reading_generated:
-            machine.status = _derive_machine_status(active_states)
+            machine.status = derive_machine_status(active_states)
             machine.connectivity = ConnectivityStatus.ONLINE
             machine.last_communication = now
         else:
-            machine.status = MachineStatus.OFFLINE
+            machine.status = machine.status.__class__.OFFLINE
             machine.connectivity = ConnectivityStatus.OFFLINE
 
     db.commit()
