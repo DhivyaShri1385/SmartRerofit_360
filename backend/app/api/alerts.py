@@ -11,7 +11,6 @@ from app.models.user import User
 
 router = APIRouter(prefix="/api/alerts", tags=["Alerts"])
 
-
 @router.get("/", response_model=List[AlertOut])
 def list_alerts(
     machine_id: Optional[str] = None,
@@ -19,6 +18,8 @@ def list_alerts(
     status_filter: Optional[str] = Query(default=None, alias="status"),
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
+    limit: int = 100,
+    offset: int = 0,
     db: Session = Depends(get_db),
 ):
     query = db.query(Alert)
@@ -32,7 +33,7 @@ def list_alerts(
         query = query.filter(Alert.created_at >= date_from)
     if date_to:
         query = query.filter(Alert.created_at <= date_to)
-    return query.order_by(Alert.created_at.desc()).limit(200).all()
+    return query.order_by(Alert.created_at.desc()).offset(offset).limit(limit).all()
 
 
 @router.get("/summary", response_model=AlertSummary)

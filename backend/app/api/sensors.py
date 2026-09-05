@@ -11,11 +11,16 @@ router = APIRouter(prefix="/api/sensors", tags=["Sensors"])
 
 
 @router.get("/", response_model=List[SensorOut])
-def list_sensors(machine_id: Optional[str] = None, db: Session = Depends(get_db)):
+def list_sensors(
+    machine_id: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+):
     query = db.query(Sensor)
     if machine_id:
         query = query.filter(Sensor.machine_id == machine_id)
-    return query.all()
+    return query.offset(offset).limit(limit).all()
 
 
 @router.get("/{sensor_id}", response_model=SensorOut)

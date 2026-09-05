@@ -19,6 +19,8 @@ def list_records(
     machine_id: Optional[str] = None,
     maintenance_type: Optional[str] = None,
     search: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0,
     db: Session = Depends(get_db),
 ):
     query = db.query(MaintenanceRecord)
@@ -29,9 +31,8 @@ def list_records(
     if search:
         query = query.filter(MaintenanceRecord.description.ilike(f"%{search}%"))
 
-    records = query.order_by(MaintenanceRecord.created_at.desc()).all()
+    records = query.order_by(MaintenanceRecord.created_at.desc()).offset(offset).limit(limit).all()
     return [to_out_dict(r) for r in records]
-
 
 @router.get("/overview", response_model=MaintenanceOverview)
 def get_overview(machine_id: Optional[str] = None, db: Session = Depends(get_db)):

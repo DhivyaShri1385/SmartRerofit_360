@@ -11,9 +11,19 @@ router = APIRouter(prefix="/api/machines", tags=["Machines"])
 
 
 @router.get("/", response_model=List[MachineOut])
-def list_machines(db: Session = Depends(get_db)):
-    return db.query(Machine).filter(Machine.is_active == True).order_by(Machine.name).all()
-
+def list_machines(
+    limit: int = 100,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(Machine)
+        .filter(Machine.is_active == True)
+        .order_by(Machine.name)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
 @router.get("/{machine_id}", response_model=MachineOut)
 def get_machine(machine_id: str, db: Session = Depends(get_db)):
