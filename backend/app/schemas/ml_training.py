@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DatasetSummary(BaseModel):
@@ -14,11 +14,13 @@ class DatasetSummary(BaseModel):
 
 
 class TrainRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     model_name: str  # "isolation_forest" | "random_forest" | "xgboost"
     dataset_version: str = "predictive_maintenance_v3"
 
 
 class ModelRunOut(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     id: int
     model_name: str
     dataset_version: str
@@ -33,17 +35,3 @@ class ModelRunOut(BaseModel):
     confusion_matrix: Optional[List[List[int]]]
     is_reference_dataset: bool
     notes: Optional[str]
-
-from pydantic import BaseModel, ConfigDict
-
-class TrainRequest(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-    model_name: str
-    dataset_version: str = "predictive_maintenance_v3"
-
-
-class ModelRunOut(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-    id: int
-    model_name: str
-    # ...rest unchanged
