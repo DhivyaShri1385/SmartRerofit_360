@@ -11,9 +11,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    # True until real ESP32/MQTT hardware exists (Semester 2)
     SIMULATION_MODE: bool = True
+
     MQTT_ENABLED: bool = False
+    MQTT_BROKER_HOST: str = "localhost"
+    MQTT_BROKER_PORT: int = 1883
+    MQTT_TOPIC_PREFIX: str = "smartretrofit"
 
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 

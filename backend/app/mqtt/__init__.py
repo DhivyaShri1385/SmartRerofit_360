@@ -1,4 +1,4 @@
 """
-Reserved for the future ESP32 -> MQTT broker -> FastAPI consumer bridge
-(Step 17). Not active in this phase — MQTT_ENABLED is False by default.
+MQTT integration layer — reserved for future ESP32 hardware ingestion.
+Not active in this prototype phase (MQTT_ENABLED=False by default).
 """

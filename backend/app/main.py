@@ -10,6 +10,7 @@ from app.services.user_seed import seed_demo_users
 from app.services.sensor_seed import seed_demo_sensors
 from app.services.device_seed import seed_demo_devices
 from app.services.simulation.engine import run_simulation_loop
+from app.mqtt.consumer import start_mqtt_consumer
 
 Base.metadata.create_all(bind=engine)
 
@@ -36,5 +37,6 @@ app.include_router(api_router)
 
 
 @app.on_event("startup")
-async def start_background_simulation():
+async def start_background_tasks():
     asyncio.create_task(run_simulation_loop())
+    start_mqtt_consumer()  # no-op today; logs and returns since MQTT_ENABLED=False

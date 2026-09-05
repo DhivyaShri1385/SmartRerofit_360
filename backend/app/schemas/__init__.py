@@ -16,6 +16,7 @@ from app.schemas.reports import (
     MaintenanceReportRow, ReportBundle,
 )
 from app.schemas.device import DeviceOut, DeviceUpdate, SensorMappingOut
+from app.schemas.mqtt_status import MQTTStatusOut
 
 __all__ = [
     "DatasetSummary", "TrainRequest", "ModelRunOut",
