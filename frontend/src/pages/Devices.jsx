@@ -5,12 +5,18 @@ import DeviceStatusBadge from "../components/DeviceStatusBadge";
 import { useMachines } from "../hooks/useMachines";
 import { useEffect, useState } from "react";
 import { getDevices } from "../services/deviceService";
+import { useEffect as useEffect2 } from "react"; // (or just reuse existing useEffect import)
+import apiClient from "../services/apiClient";
 
 export default function Devices() {
   const { machines } = useMachines();
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [mqttStatus, setMqttStatus] = useState(null);
+useEffect(() => {
+  apiClient.get("/api/mqtt/status").then((res) => setMqttStatus(res.data)).catch(() => {});
+}, []);
 
   const machineName = (id) => machines.find((m) => m.id === id)?.name || "Unknown";
 
@@ -49,6 +55,30 @@ export default function Devices() {
           <Inbox size={24} /> No devices configured yet.
         </div>
       )}
+
+      {mqttStatus && (
+  <div className="panel p-4 mb-6">
+    <h3 className="text-sm font-medium text-gray-300 mb-3">MQTT Architecture (Planned)</h3>
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
+      <div>
+        <div className="text-[11px] text-gray-500 mb-0.5">Broker</div>
+        <div className="text-gray-300">{mqttStatus.broker_host}:{mqttStatus.broker_port}</div>
+      </div>
+      <div>
+        <div className="text-[11px] text-gray-500 mb-0.5">Connected</div>
+        <div className="text-status-offline">{mqttStatus.connected ? "Yes" : "No — hardware not connected"}</div>
+      </div>
+      <div className="col-span-2">
+        <div className="text-[11px] text-gray-500 mb-0.5">Topic Pattern</div>
+        <code className="text-xs text-gray-400">{mqttStatus.topic_pattern}</code>
+      </div>
+    </div>
+    <div className="text-[11px] text-gray-500 mb-1">Example message schema:</div>
+    <pre className="text-[11px] text-gray-400 bg-surface-elevated rounded p-2 overflow-x-auto">
+      {JSON.stringify(mqttStatus.message_schema_example, null, 2)}
+    </pre>
+  </div>
+)}
 
       {!loading && !error && devices.length > 0 && (
         <div className="panel overflow-x-auto">
