@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Loader2, AlertTriangle, Inbox, Check, CheckCheck } from "lucide-react";
+import { Check, CheckCheck, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
 import AlertStatusBadge from "../components/AlertStatusBadge";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
+import EmptyState from "../components/EmptyState";
 import { useAlerts } from "../hooks/useAlerts";
 import { useMachines } from "../hooks/useMachines";
 import { acknowledgeAlert, resolveAlert } from "../services/alertService";
@@ -16,6 +19,7 @@ export default function Alerts() {
   const [machineFilter, setMachineFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [actionError, setActionError] = useState(null);
 
   const filters = {
     ...(machineFilter && { machine_id: machineFilter }),
@@ -28,13 +32,23 @@ export default function Alerts() {
   const machineName = (id) => machines.find((m) => m.id === id)?.name || "Unknown";
 
   const handleAck = async (id) => {
-    await acknowledgeAlert(id);
-    refresh();
+    setActionError(null);
+    try {
+      await acknowledgeAlert(id);
+      refresh();
+    } catch (err) {
+      setActionError(err.message || "Failed to acknowledge alert");
+    }
   };
 
   const handleResolve = async (id) => {
-    await resolveAlert(id);
-    refresh();
+    setActionError(null);
+    try {
+      await resolveAlert(id);
+      refresh();
+    } catch (err) {
+      setActionError(err.message || "Failed to resolve alert");
+    }
   };
 
   return (
@@ -56,22 +70,18 @@ export default function Alerts() {
         </select>
       </div>
 
-      {loading && alerts.length === 0 && (
-        <div className="panel p-10 flex items-center justify-center text-gray-500 gap-2">
-          <Loader2 size={18} className="animate-spin" /> Loading alerts…
+      {actionError && (
+        <div className="mb-4 flex items-center gap-2 text-status-critical text-xs bg-status-critical/10 border border-status-critical/30 rounded px-3 py-2">
+          <AlertTriangle size={14} /> {actionError}
         </div>
       )}
 
-      {!loading && error && (
-        <div className="panel p-6 flex items-center gap-3 text-status-critical">
-          <AlertTriangle size={18} /> {error}
-        </div>
-      )}
+      {loading && alerts.length === 0 && <LoadingState label="Loading alerts…" />}
+
+      {!loading && error && <ErrorState message={error} onRetry={refresh} />}
 
       {!loading && !error && alerts.length === 0 && (
-        <div className="panel p-10 flex flex-col items-center justify-center text-gray-500 gap-2">
-          <Inbox size={24} /> No alerts match these filters.
-        </div>
+        <EmptyState message="No alerts match these filters." />
       )}
 
       {!loading && !error && alerts.length > 0 && (
