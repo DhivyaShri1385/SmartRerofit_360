@@ -13,6 +13,7 @@ from app.models.ml_training import MLTrainingRecord
 from app.models.ml_model_run import ModelRun
 from app.schemas.ml_training import DatasetSummary, TrainRequest, ModelRunOut
 from app.analytics.train import train_and_evaluate
+from app.schemas.analytics_status import AnalyticsDataStatus
 
 router = APIRouter(prefix="/api/analytics", tags=["Predictive Maintenance Analytics"])
 
@@ -87,4 +88,35 @@ def _to_out(run: ModelRun) -> ModelRunOut:
         precision=run.precision, recall=run.recall, f1_score=run.f1_score, roc_auc=run.roc_auc,
         confusion_matrix=json.loads(run.confusion_matrix) if run.confusion_matrix else None,
         is_reference_dataset=run.is_reference_dataset, notes=run.notes,
+    )
+
+@router.get("/dataset/status", response_model=AnalyticsDataStatus)
+def dataset_status(dataset_version: str = DEFAULT_DATASET_VERSION, db: Session = Depends(get_db)):
+    """
+    Lets the frontend check BEFORE offering a 'Train' button whether real
+    data exists, and state clearly that any current results come from a
+    synthetic reference dataset, not validated hardware data.
+    """
+    count = db.query(MLTrainingRecord).filter(
+        MLTrainingRecord.dataset_version == dataset_version
+    ).count()
+
+    if count == 0:
+        return AnalyticsDataStatus(
+            has_data=False,
+            dataset_version=None,
+            record_count=0,
+            is_synthetic_reference=False,
+            message="Insufficient validated data for model evaluation. No machine-condition dataset has been collected yet.",
+        )
+
+    return AnalyticsDataStatus(
+        has_data=True,
+        dataset_version=dataset_version,
+        record_count=count,
+        is_synthetic_reference=True,
+        message=(
+            "Training data available, but this is a synthetic/external reference dataset "
+            "used to prototype the pipeline — not validated data from Lathe-01 hardware."
+        ),
     )
