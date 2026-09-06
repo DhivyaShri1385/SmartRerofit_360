@@ -19,3 +19,10 @@ export async function getModelRuns() {
   const { data } = await apiClient.get("/api/analytics/models");
   return data;
 }
+
+export async function getDatasetStatus(datasetVersion = "predictive_maintenance_v3") {
+  const { data } = await apiClient.get("/api/analytics/dataset/status", {
+    params: { dataset_version: datasetVersion },
+  });
+  return data;
+}
