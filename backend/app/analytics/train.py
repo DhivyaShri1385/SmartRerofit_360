@@ -21,6 +21,7 @@ except ImportError:
     XGBOOST_AVAILABLE = False
 
 SUPPORTED_MODELS = ["random_forest", "isolation_forest", "xgboost"]
+MIN_RECORDS_REQUIRED = 20
 
 
 def train_and_evaluate(db, dataset_version: str, model_name: str) -> dict:
@@ -28,8 +29,25 @@ def train_and_evaluate(db, dataset_version: str, model_name: str) -> dict:
         raise ValueError(f"Unsupported model '{model_name}'. Choose from {SUPPORTED_MODELS}")
 
     df = load_dataframe(db, dataset_version)
+
     if df.empty:
-        return {"error": "Insufficient validated data for model evaluation."}
+        return {
+            "error": (
+                "Insufficient validated data for model evaluation. "
+                f"No records found for dataset_version='{dataset_version}'. "
+                "This is expected until real machine-condition data is collected from "
+                "physical hardware (Semester 2), or until the reference CSV is imported."
+            )
+        }
+
+    if len(df) < MIN_RECORDS_REQUIRED:
+        return {
+            "error": (
+                f"Insufficient validated data for model evaluation. Only {len(df)} records "
+                f"found — too few for a meaningful train/test split. At least {MIN_RECORDS_REQUIRED} "
+                "records are required."
+            )
+        }
 
     if model_name == "xgboost" and not XGBOOST_AVAILABLE:
         return {"error": "xgboost is not installed on the server. Run: pip install xgboost"}
