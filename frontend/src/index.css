@@ -29,3 +29,33 @@
            bg-amber-500/10 text-amber-400 border border-amber-500/30;
   }
 }
+
+body.theme-light {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+body.theme-light .bg-surface-base,
+body.theme-light .bg-surface-panel,
+body.theme-light .bg-surface-elevated {
+  background-color: #ffffff;
+}
+
+body.theme-light .border-surface-border {
+  border-color: #d1d5db;
+}
+
+body.theme-light .text-gray-100,
+body.theme-light .text-gray-200,
+body.theme-light .text-gray-300 {
+  color: #111827;
+}
+
+body.theme-light .text-gray-400,
+body.theme-light .text-gray-500 {
+  color: #4b5563;
+}
+
+body.theme-light .text-gray-600 {
+  color: #6b7280;
+}

@@ -1,12 +1,14 @@
-import { Menu, Wifi, WifiOff, UserCircle2, LogOut } from "lucide-react";
+import { Menu, Wifi, WifiOff, UserCircle2, LogOut, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getSystemHealth } from "../services/healthService";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Topbar({ onToggleSidebar }) {
   const [connected, setConnected] = useState(null);
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +53,15 @@ export default function Topbar({ onToggleSidebar }) {
             </>
           )}
         </div>
+
+        <button
+          onClick={toggleTheme}
+          className="p-1.5 rounded hover:bg-surface-elevated text-gray-400"
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+          title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+        >
+          {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+        </button>
 
         <div className="flex items-center gap-2 text-sm text-gray-300">
           <UserCircle2 size={22} className="text-gray-500" />
